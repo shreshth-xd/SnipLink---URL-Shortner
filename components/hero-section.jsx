@@ -11,7 +11,7 @@ export function HeroSection() {
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const handleShorten = async (e: React.FormEvent) => {
+  const handleShorten = async (e) => {
     e.preventDefault();
     if (!url) return;
 
