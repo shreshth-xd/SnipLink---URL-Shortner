@@ -16,9 +16,24 @@ export function HeroSection() {
     if (!url) return;
 
     setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    setShortenedUrl(`snip.link/${Math.random().toString(36).substring(2, 8)}`);
+    
+    const code = Math.random().toString(36).substring(2,8);
+
+    const generatedUrl =
+        `localhost:3000/${code}`;
+
+    setShortenedUrl(
+        generatedUrl
+    );
+
+    const response = await fetch("/api/shorten", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ originalUrl: url, shortCode: code }),
+    });
+    const data = await response.json();
     setIsLoading(false);
   };
 
