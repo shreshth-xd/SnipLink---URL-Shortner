@@ -16,7 +16,28 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1500);
+    try{
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Handle successful login (e.g., redirect to dashboard)
+        setIsLoading(false);
+        window.location.href = "/";
+        console.log("Login successful:", data);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.error("Login error:", error);
+    }
+
   };
 
   return (

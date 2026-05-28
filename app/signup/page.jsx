@@ -54,7 +54,25 @@ export default function SignupPage() {
     e.preventDefault();
     if (password !== confirmPassword) return;
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1500);
+
+    try {
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Redirect to login page or show success message
+        window.location.href = "/login";
+      }
+      
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`Signup error: ${error}`);
+    }
   };
 
   const isFormValid = username && email && password && confirmPassword && password === confirmPassword;
