@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 import argon2 from "argon2";
+import {generateToken, verifyToken} from "@/lib/jwt";
 
 export async function POST(req){
 
@@ -31,7 +32,26 @@ export async function POST(req){
             return NextResponse.json({message: "Invalid credentials"}, {status: 401});
         }
     
-        return NextResponse.json({message: "Login successful"});
+        const token = generateToken(user);
+        const response = NextResponse.json({
+            message: "Login successful"
+        });
+
+        response.cookies.set(
+            "token",
+            token,
+            {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+                maxAge: 60 * 60 * 24 * 7,
+                path: "/"
+            }
+        );
+
+        return response;
+
+        
     }catch(error){
         console.log("Login error:", error);
         return NextResponse.json({message: "Internal server error"}, {status: 500});
