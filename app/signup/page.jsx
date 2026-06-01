@@ -66,7 +66,14 @@ export default function SignupPage() {
 
       if (response.ok) {
         // Redirect to login page or show success message
+        setIsLoading(false);
         window.location.href = "/login";
+      }
+
+      if (!response.ok) {
+        alert(data.error);
+        setIsLoading(false);
+        return;
       }
       
     } catch (error) {
