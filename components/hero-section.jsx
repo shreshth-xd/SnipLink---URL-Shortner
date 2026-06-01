@@ -16,25 +16,21 @@ export function HeroSection() {
     if (!url) return;
 
     setIsLoading(true);
-    
-    const code = Math.random().toString(36).substring(2,8);
-
-    const generatedUrl =
-        `localhost:3000/${code}`;
-
-    setShortenedUrl(
-        generatedUrl
-    );
 
     const response = await fetch("/api/shorten", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ originalUrl: url, shortCode: code }),
+      body: JSON.stringify({ originalUrl: url }),
     });
     const data = await response.json();
     setIsLoading(false);
+
+    if (response.ok) {
+      setShortenedUrl(
+          `${window.location.origin}/${data.shortCode}`
+      );
   };
 
   const handleCopy = async () => {
@@ -176,4 +172,5 @@ export function HeroSection() {
       </div>
     </section>
   );
+}
 }
