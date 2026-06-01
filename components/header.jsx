@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Link2 } from "lucide-react";
+
 import {getCurrentUser} from "@/lib/auth";
+import { LogoutButton } from "./logout-button";
 
 export async function Header() {
   const user = await getCurrentUser();
@@ -42,6 +44,8 @@ export async function Header() {
                 <span className="text-sm">
                   {user.username}
                 </span>
+
+                <LogoutButton />
 
                 <Link 
                   href="/dashboard"
