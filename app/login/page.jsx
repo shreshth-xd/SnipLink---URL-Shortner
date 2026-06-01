@@ -6,12 +6,15 @@ import { Link2, Eye, EyeOff, ArrowRight, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,8 +33,9 @@ export default function LoginPage() {
       if (response.ok) {
         // Handle successful login (e.g., redirect to dashboard)
         setIsLoading(false);
-        window.location.href = "/";
         console.log("Login successful:", data);
+        router.push("/");
+        router.refresh();
       }
     } catch (error) {
       setIsLoading(false);
