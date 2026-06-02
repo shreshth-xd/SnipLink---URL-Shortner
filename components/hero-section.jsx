@@ -31,11 +31,12 @@ export function HeroSection() {
       setShortenedUrl(
           `${window.location.origin}/${data.shortCode}`
       );
+      console.log(shortenedUrl)
   };
 }
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(`https://${shortenedUrl}`);
+    await navigator.clipboard.writeText(`${shortenedUrl}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -127,7 +128,7 @@ export function HeroSection() {
                     Your shortened URL
                   </p>
                   <p className="font-mono text-sm font-medium text-primary sm:text-base">
-                    https://{shortenedUrl}
+                    {shortenedUrl}
                   </p>
                 </div>
               </div>
