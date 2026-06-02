@@ -27,6 +27,13 @@ export async function POST(req) {
             );
         }
 
+        if (username.length > 30){
+            return NextResponse.json(
+                { error: "Username must be at most 30 characters long" },
+                { status: 400 }
+            );
+        }
+
         // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 function PasswordStrengthIndicator({ password }) {
   const checks = [
     { label: "At least 8 characters", valid: password.length >= 8 },
+    { label: "At most 30 characters", valid: password.length <= 30 },
     { label: "Contains a number", valid: /\d/.test(password) },
     { label: "Contains uppercase", valid: /[A-Z]/.test(password) },
   ];
