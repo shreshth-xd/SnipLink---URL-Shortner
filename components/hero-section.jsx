@@ -32,6 +32,7 @@ export function HeroSection() {
           `${window.location.origin}/${data.shortCode}`
       );
   };
+}
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(`https://${shortenedUrl}`);
@@ -172,5 +173,4 @@ export function HeroSection() {
       </div>
     </section>
   );
-}
 }
