@@ -5,7 +5,6 @@ import Link from "next/link";
 import pool from "@/lib/db";
 
 import { DeleteButton } from "@/components/deleteBtn";
-import { Trash2 } from "lucide-react";
 
 
 export default async function Dashboard() {  
