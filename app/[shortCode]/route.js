@@ -2,10 +2,7 @@ import pool from "@/lib/db";
 import { redirect }
 from "next/navigation";
 
-export async function GET(
-    req,
-    { params }
-){
+export async function GET( req, { params } ){
 
     const {
         shortCode
@@ -21,10 +18,7 @@ export async function GET(
             [shortCode]
         );
 
-    if(
-        !result.rows.length
-    ){
-
+    if(!result.rows.length){
         return Response.json(
             {
                 error:"Not found"
@@ -33,9 +27,18 @@ export async function GET(
                 status:404
             }
         );
-
     }
 
+    await pool.query(
+        `
+        UPDATE urls
+        SET clicks = clicks + 1
+        WHERE short_code = $1
+        `,
+        [shortCode]
+    );
+
+    
     redirect(
         result.rows[0]
         .original_url
