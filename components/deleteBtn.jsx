@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 
 import {
   Dialog,
@@ -16,6 +17,9 @@ import {
 } from "@/components/ui/dialog";
 
 import { Trash2 } from "lucide-react";
+
+
+
 
 export function DeleteButton({ urlId }) {
   const [open, setOpen] = useState(false);
@@ -97,6 +101,9 @@ export function DeleteButton({ urlId }) {
             onClick={handleDelete}
             disabled={loading}
           >
+
+                import { Trash2 } from "lucide-react";
+
             {loading
               ? "Deleting..."
               : "Delete URL"}
