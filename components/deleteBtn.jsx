@@ -16,7 +16,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { Trash2 } from "lucide-react";
 
 
 
@@ -102,7 +101,7 @@ export function DeleteButton({ urlId }) {
             disabled={loading}
           >
 
-                import { Trash2 } from "lucide-react";
+                <Trash2 className="h-4 w-4" />
 
             {loading
               ? "Deleting..."
