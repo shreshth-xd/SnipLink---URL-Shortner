@@ -11,7 +11,7 @@ export async function GET( req, { params } ){
     const result =
         await pool.query(
             `
-            SELECT original_url
+            SELECT id, original_url
             FROM urls
             WHERE short_code=$1
             `,
@@ -29,18 +29,32 @@ export async function GET( req, { params } ){
         );
     }
 
+    const url = result.rows[0];
+
     await pool.query(
         `
         UPDATE urls
         SET clicks = clicks + 1
         WHERE short_code = $1
+        AND id = $2
         `,
-        [shortCode]
+        [shortCode, url.id]
+    );
+
+
+  // Insert analytics event
+    await pool.query(
+        `
+        INSERT INTO click_events (
+        url_id
+        )
+        VALUES ($1)
+        `,
+        [url.id]
     );
 
     
     redirect(
-        result.rows[0]
-        .original_url
+        url.original_url
     );
 }
