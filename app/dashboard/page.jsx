@@ -1,4 +1,3 @@
-import { redis } from "@/lib/redis";
 import pool from "@/lib/db";
 import { redirect } from "next/navigation";
 
@@ -7,10 +6,6 @@ import { Header } from "../../components/header";
 import Link from "next/link";
 import { DeleteButton } from "@/components/deleteBtn";
 
-// Analytics Queue
-import {
-  analyticsQueue
-} from "@/queues/analyticsQueue";
 
 export default async function Dashboard() {  
   const user = await getCurrentUser();
@@ -19,15 +14,6 @@ export default async function Dashboard() {
     redirect("/login");
   }
 
-
-  // await analyticsQueue.add(
-  //   "test-job",
-  //   {
-  //     message: "Hello Queue"
-  //   }
-  // );
-  
-  
   const [
     result,
     trashResult,
