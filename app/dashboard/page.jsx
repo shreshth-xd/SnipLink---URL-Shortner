@@ -1,11 +1,16 @@
+import { redis } from "@/lib/redis";
+import pool from "@/lib/db";
 import { redirect } from "next/navigation";
+
 import { getCurrentUser } from "@/lib/auth";
 import { Header } from "../../components/header";
 import Link from "next/link";
-import pool from "@/lib/db";
-
 import { DeleteButton } from "@/components/deleteBtn";
 
+// Analytics Queue
+import {
+  analyticsQueue
+} from "@/queues/analyticsQueue";
 
 export default async function Dashboard() {  
   const user = await getCurrentUser();
@@ -13,6 +18,14 @@ export default async function Dashboard() {
   if (!user) {
     redirect("/login");
   }
+
+
+  // await analyticsQueue.add(
+  //   "test-job",
+  //   {
+  //     message: "Hello Queue"
+  //   }
+  // );
   
   
   const [
