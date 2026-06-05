@@ -15,30 +15,74 @@ export default async function Dashboard() {
   }
   
   
-  const result = await pool.query(
-    `
-  SELECT
-      id,
-      original_url,
-      short_code,
-      clicks,
-      created_at
-  FROM urls
-  WHERE user_id = $1
-  ORDER BY created_at DESC
-  `,
-    [user.userId],
-  );
-  
+  const [
+    result,
+    trashResult,
+    clicksResult,
+  ] = await Promise.all([
+
+    pool.query(
+      `
+      SELECT
+          id,
+          original_url,
+          short_code,
+          clicks,
+          created_at
+      FROM urls
+      WHERE user_id = $1
+      AND deleted_at IS NULL
+      ORDER BY created_at DESC
+      `,
+      [user.userId]
+    ),
+
+    pool.query(
+      `
+      SELECT COUNT(*) AS count
+      FROM urls
+      WHERE user_id = $1
+      AND deleted_at IS NOT NULL
+      `,
+      [user.userId]
+    ),
+
+    pool.query(
+      `
+      SELECT COALESCE(
+          SUM(clicks),
+          0
+      ) AS total_clicks
+      FROM urls
+      WHERE user_id = $1
+      AND deleted_at IS NULL
+      `,
+      [user.userId]
+    ),
+
+  ]);
+
+
   const urls = result.rows;
-  
   const links = urls.map((url) => ({
     ...url,
     host: new URL(url.original_url).hostname.replace(/^www\./, ""),
   }));
   
   const totalUrls = links.length;
-  const totalClicks = links.reduce((sum, link) => sum + link.clicks, 0);
+
+  const trashCount =
+    parseInt(
+      trashResult.rows[0].count,
+      10
+    );
+
+  const totalClicks =
+    parseInt(
+      clicksResult.rows[0].total_clicks,
+      10
+    );
+  
 
   return (
     <>
@@ -47,14 +91,26 @@ export default async function Dashboard() {
 
         <section className="mx-auto max-w-7xl px-4 pt-28 pb-12 sm:px-6 lg:px-8">
           {/* Page Header */}
-          <div className="mb-10">
+          {/* <div className="mb-10">
             <h1 className="text-4xl font-bold tracking-tight">Dashboard</h1>
 
             <p className="mt-2 text-muted-foreground">
               Manage and monitor your shortened links.
             </p>
+          </div> */}
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold tracking-tight">
+                Dashboard
+              </h1>
+
+              <p className="mt-2 text-muted-foreground">
+                Manage and monitor your shortened links.
+              </p>
+            </div>
           </div>
 
+          
           {/* Stats */}
           <div className="mb-10 grid gap-4 md:grid-cols-2">
             <div className="rounded-2xl border border-border/50 bg-card/30 p-6 backdrop-blur-sm">
@@ -76,9 +132,55 @@ export default async function Dashboard() {
 
           {/* Links Table */}
           <div className="overflow-hidden rounded-2xl border border-border/50 bg-card/30 backdrop-blur-sm">
-            <div className="border-b border-border/50 px-6 py-4">
-              <h2 className="font-semibold">Your Links</h2>
+            <div className="flex items-center justify-between border-b border-border/50 px-6 py-4">
+              <h2 className="font-semibold">
+                Your Links
+              </h2>
+
+               <Link
+                href="/dashboard/analytics"
+                className="
+                  rounded-lg
+                  border
+                  border-border/50
+                  bg-card/30
+                  px-3
+                  py-1.5
+                  text-sm
+                  font-medium
+                  text-muted-foreground
+                  transition-all
+                  hover:border-primary/30
+                  hover:bg-primary/5
+                  hover:text-primary
+                "
+              >
+                Analytics
+              </Link>
+
+              <Link
+                href="/dashboard/trash"
+                className="
+                  rounded-lg
+                  border
+                  border-border/50
+                  bg-card/30
+                  px-3
+                  py-1.5
+                  text-sm
+                  font-medium
+                  text-muted-foreground
+                  transition-all
+                  hover:border-primary/30
+                  hover:bg-primary/5
+                  hover:text-primary
+                "
+              >
+                Trash ({trashCount})
+              </Link>
             </div>
+
+              
 
             <div className="overflow-x-auto">
               <table className="w-full">
