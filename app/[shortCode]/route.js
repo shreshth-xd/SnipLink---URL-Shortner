@@ -4,10 +4,10 @@ from "next/navigation";
 
 export async function GET( req, { params } ){
 
-    const {
-        shortCode
-    } = await params;
+    const {shortCode} = await params;
+    const referrer = req.headers.get("referer");
 
+    // Retrieving the original URL
     const result =
         await pool.query(
             `
@@ -30,34 +30,14 @@ export async function GET( req, { params } ){
     }
 
     const url = result.rows[0];
-
-    // We are gonna make the worker do the following for us instead
-    // await pool.query(
-    //     `
-    //     UPDATE urls
-    //     SET clicks = clicks + 1
-    //     WHERE short_code = $1
-    //     AND id = $2
-    //     `,
-    //     [shortCode, url.id]
-    // );
-
-    // Insert analytics event
-      // await pool.query(
-      //     `
-      //     INSERT INTO click_events (
-      //     url_id
-      //     )
-      //     VALUES ($1)
-      //     `,
-      //     [url.id]
-      // );
- 
- 
+    
+    // Instead of hitting our Postgres DB to update the click count or to insert the click entry into analytics
+    // we shall be passing this as a job down to our analytics queue which will be processed asynchronously by a worker.
     await analyticsQueue.add(
         "track-click",
         {
             urlId: url.id,
+            referrer: referrer
         }
     );
 
