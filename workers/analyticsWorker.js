@@ -5,16 +5,58 @@ import pool from "../lib/db.js";
 const analyticsWorker = new Worker(
   "analytics",
   async (job) => {
-    const { urlId } = job.data;
+    const { 
+      urlId,
+      referrer,
+      ip
+    } = job.data;
+
+    let country = null;
+    let city = null;
 
     try {
+
+      // Geo enrichment
+      if (ip) {
+
+        const response = await fetch(
+          `http://ip-api.com/json/${ip}?fields=status,country,city`
+        );
+
+        const geoData =
+          await response.json();
+
+        if (
+          geoData.status === "success"
+        ) {
+
+          country =
+            geoData.country;
+
+          city =
+            geoData.city;
+        }
+      }
+
+
+      // Increment URL click counter
+      await pool.query(
+        `
+        UPDATE urls
+        SET clicks = clicks + 1
+        WHERE id = $1
+        `,
+        [urlId]
+      );
+
+
       // Insert click event into analytics table
       await pool.query(
         `
-        INSERT INTO click_events (url_id)
-        VALUES ($1)
+        INSERT INTO click_events (url_id, referrer, country, city)
+        VALUES ($1, $2, $3, $4)
         `,
-        [urlId]
+        [urlId, referrer, country, city]
       );
 
       console.log("Analytics event stored for URL:", urlId);
