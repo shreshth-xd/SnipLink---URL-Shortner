@@ -6,6 +6,7 @@ export async function GET( req, { params } ){
 
     const {shortCode} = await params;
     const referrer = req.headers.get("referer");
+    const ip = req.headers.get("x-forwarded-for");
 
     // Retrieving the original URL
     const result =
@@ -37,7 +38,8 @@ export async function GET( req, { params } ){
         "track-click",
         {
             urlId: url.id,
-            referrer: referrer
+            referrer: referrer,
+            ip: ip
         }
     );
 
