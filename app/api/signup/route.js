@@ -2,9 +2,33 @@ import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 import argon2 from "argon2";
 
+import { checkRateLimit } from "@/lib/rateLimiter";
 export async function POST(req) {
     
     try {
+        const ip =
+        request.headers.get(
+            "x-forwarded-for"
+        )?.split(",")[0]?.trim()
+        || "unknown";
+
+        const result =
+        await checkRateLimit(
+            `rate_limit:signup:${ip}`,
+            5
+        );
+
+        if (!result.allowed) {
+            return Response.json(
+                {
+                    error:"Too many signup attempts. Please try again later."
+                },
+                {
+                    status: 429
+                }
+            );
+        }
+
         const body = await req.json();
 
         const username = body.username?.trim();

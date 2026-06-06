@@ -4,12 +4,36 @@ import argon2 from "argon2";
 import {generateToken, verifyToken} from "@/lib/jwt";
 import {getCurrentUser} from "@/lib/auth";
 
+import { checkRateLimit } from "@/lib/rateLimiter";
 export async function POST(req){
 
-    try{
+    try{            
+        const ip =
+        request.headers.get(
+            "x-forwarded-for"
+        )?.split(",")[0]?.trim()
+        || "unknown";
+
+        const result =
+        await checkRateLimit(
+            `rate_limit:login:${ip}`,
+            10
+        );
+
+        if (!result.allowed) {
+            return Response.json(
+                {
+                    error:"Too many login attempts. Please try again later."
+                },
+                {
+                    status: 429
+                }
+            );
+        }
+        
         // Retrieving email and password from the request body
         const {email, password} = await req.json();
-    
+
         // Find user
         const result = await pool.query(
             "SELECT * FROM users WHERE email = $1",
