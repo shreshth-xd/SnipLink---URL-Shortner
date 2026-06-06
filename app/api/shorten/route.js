@@ -1,22 +1,50 @@
-import { NextResponse } from "next/server";
 import pool from "@/lib/db";
-import {getCurrentUser} from "@/lib/auth";
 import {nanoid} from "nanoid";
+import { NextResponse } from "next/server";
+import {getCurrentUser} from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rateLimiter";
 
 export async function POST(req){
     try{
         
         const user = await getCurrentUser();
         const userId = user?.userId ?? null;
-    
-        const body =
-            await req.json();
-        
 
-        const {
-            originalUrl,
-        } = body;
+        // Attaching a Redis rate limiter for a user, guest or logged-in alike, using Redis rate limiting helper
+        let key;
+        let limit;
+
+        if (user) {
+            key =`rate_limit:user:${user.userId}`;
+            limit = 45;
+        } else {
+            const ip =
+                request.headers.get(
+                "x-forwarded-for"
+                )?.split(",")[0]?.trim()
+                || "unknown";
+
+            key =
+                `rate_limit:ip:${ip}`;
+            limit = 20;
+        }
+
+        // To reject the user if they have exceeded their hourly rate limits
+        const rateLimitResult = checkRateLimit(key,limit);
+        if (!rateLimitResult.allowed) {
+            return Response.json(
+                {
+                    error:"Rate limit exceeded. Please try again later.",
+                },
+                {
+                    status: 429,
+                }
+            );
+        }
         
+        const body = await req.json();
+        const {originalUrl} = body;
+
         const shortCode = nanoid(7);
 
         if (!originalUrl) {
