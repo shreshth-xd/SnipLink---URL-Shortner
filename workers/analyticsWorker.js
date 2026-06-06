@@ -2,6 +2,8 @@ import {Worker, Queue} from "bullmq";
 import {redis} from "../lib/redis.js";
 import pool from "../lib/db.js";
 
+// Making a dedicated connection from the pool for the transaction, so that each transaction query remains in the same connection until the client is released.
+const client  = pool.connect()
 const analyticsWorker = new Worker(
   "analytics",
   async (job) => {
@@ -38,6 +40,7 @@ const analyticsWorker = new Worker(
         }
       }
 
+      (await client).query("BEGIN");
 
       // Increment URL click counter
       await pool.query(
@@ -59,10 +62,17 @@ const analyticsWorker = new Worker(
         [urlId, referrer, country, city]
       );
 
+      (await client).query("COMMIT");
+
       console.log("Analytics event stored for URL:", urlId);
     } catch (error) {
+
+      (await client).query("ROLLBACK");
       console.error("Worker error:", error);
+      
       throw error; // important so BullMQ can retry if needed
+    } finally {
+      (await client).release();
     }
   },
   {
