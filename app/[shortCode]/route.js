@@ -5,8 +5,6 @@ from "next/navigation";
 export async function GET( req, { params } ){
 
     const {shortCode} = await params;
-    const referrer = req.headers.get("referer");
-    const ip = req.headers.get("x-forwarded-for");
 
     // Retrieving the original URL
     const result =
@@ -32,15 +30,13 @@ export async function GET( req, { params } ){
 
     const url = result.rows[0];
     
-    // Instead of hitting our Postgres DB to update the click count or to insert the click entry into analytics
-    // we shall be passing this as a job down to our analytics queue which will be processed asynchronously by a worker.
-    await analyticsQueue.add(
-        "track-click",
-        {
-            urlId: url.id,
-            referrer: referrer,
-            ip: ip
-        }
+    await pool.query(
+        `
+        UPDATE urls
+        SET clicks = clicks + 1
+        WHERE short_code = $1
+        `,
+        [shortCode]
     );
 
     
