@@ -19,7 +19,7 @@ export async function POST(req){
             limit = 45;
         } else {
             const ip =
-                request.headers.get(
+                req.headers.get(
                 "x-forwarded-for"
                 )?.split(",")[0]?.trim()
                 || "unknown";
@@ -30,7 +30,7 @@ export async function POST(req){
         }
 
         // To reject the user if they have exceeded their hourly rate limits
-        const rateLimitResult = checkRateLimit(key,limit);
+        const rateLimitResult = await checkRateLimit(key,limit);
         if (!rateLimitResult.allowed) {
             return Response.json(
                 {
