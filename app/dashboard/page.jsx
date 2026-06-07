@@ -136,27 +136,6 @@ export default async function Dashboard() {
                 Your Links
               </h2>
 
-               <Link
-                href="/dashboard/analytics"
-                className="
-                  rounded-lg
-                  border
-                  border-border/50
-                  bg-card/30
-                  px-3
-                  py-1.5
-                  text-sm
-                  font-medium
-                  text-muted-foreground
-                  transition-all
-                  hover:border-primary/30
-                  hover:bg-primary/5
-                  hover:text-primary
-                "
-              >
-                Analytics
-              </Link>
-
               <Link
                 href="/dashboard/trash"
                 className="
