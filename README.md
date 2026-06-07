@@ -14,7 +14,6 @@ Create, manage, and share shortened URLs with authentication, rate limiting, Red
 ![BullMQ](https://img.shields.io/badge/BullMQ-Scheduled_Jobs-orange?style=for-the-badge)
 ![JWT](https://img.shields.io/badge/JWT-Authentication-black?style=for-the-badge\&logo=jsonwebtokens)
 ![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge\&logo=docker\&logoColor=white)
-![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
 
 </div>
 
