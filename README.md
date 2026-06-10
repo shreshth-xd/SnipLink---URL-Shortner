@@ -35,6 +35,12 @@ The project goes beyond simple URL shortening by incorporating:
 
 ---
 
+## 📸 Screenshots
+
+[Dashboard Screenshot]
+
+[Create URL Screenshot]
+
 ## ✨ Features
 
 ### 🔗 URL Management
