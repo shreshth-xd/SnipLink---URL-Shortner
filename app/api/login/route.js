@@ -9,18 +9,18 @@ export async function POST(req){
 
     try{            
         const ip =
-        request.headers.get(
+        req.headers.get(
             "x-forwarded-for"
         )?.split(",")[0]?.trim()
         || "unknown";
 
-        const result =
+        const resultLimit =
         await checkRateLimit(
             `rate_limit:login:${ip}`,
             10
         );
 
-        if (!result.allowed) {
+        if (!resultLimit.allowed) {
             return Response.json(
                 {
                     error:"Too many login attempts. Please try again later."
@@ -35,20 +35,20 @@ export async function POST(req){
         const {email, password} = await req.json();
 
         // Find user
-        const result = await pool.query(
+        const LoginResult = await pool.query(
             "SELECT * FROM users WHERE email = $1",
             [email]
         );
     
         // User exists?
-        if (result.rows.length === 0) {
+        if (LoginResult.rows.length === 0) {
             return NextResponse.json(
                 { message: "Invalid credentials" },
                 { status: 401 }
             );
         }
     
-        const user = result.rows[0];
+        const user = LoginResult.rows[0];
     
         // Verify password
         const valid = await argon2.verify(user.password_hash,password);
