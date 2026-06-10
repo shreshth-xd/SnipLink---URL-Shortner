@@ -37,9 +37,9 @@ The project goes beyond simple URL shortening by incorporating:
 
 ## 📸 Screenshots
 
-[Dashboard Screenshot]
+![Dashboard Screenshot]()
 
-[Create URL Screenshot]
+![Create URL Screenshot]()
 
 ## ✨ Features
 
