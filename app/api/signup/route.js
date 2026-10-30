@@ -12,13 +12,13 @@ export async function POST(req) {
         )?.split(",")[0]?.trim()
         || "unknown";
 
-        const result =
+        const resultLimit =
         await checkRateLimit(
             `rate_limit:signup:${ip}`,
             5
         );
 
-        if (!result.allowed) {
+        if (!resultLimit.allowed) {
             return Response.json(
                 {
                     error:"Too many signup attempts. Please try again later."
@@ -94,7 +94,7 @@ export async function POST(req) {
             const hashedPassword =
                 await argon2.hash(password);
 
-            const result = await pool.query(
+            const SignUpResult = await pool.query(
                 `INSERT INTO users
                 (username, email, password_hash)
                 VALUES ($1, $2, $3)
@@ -105,7 +105,7 @@ export async function POST(req) {
             return NextResponse.json(
                 {
                     message: "User created successfully",
-                    userId: result.rows[0].id
+                    userId: SignUpResult.rows[0].id
                 },
                 { status: 201 }
             );
