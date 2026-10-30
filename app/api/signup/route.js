@@ -7,7 +7,7 @@ export async function POST(req) {
     
     try {
         const ip =
-        request.headers.get(
+        req.headers.get(
             "x-forwarded-for"
         )?.split(",")[0]?.trim()
         || "unknown";
@@ -19,7 +19,7 @@ export async function POST(req) {
         );
 
         if (!resultLimit.allowed) {
-            return Response.json(
+            return NextResponse.json(
                 {
                     error:"Too many signup attempts. Please try again later."
                 },

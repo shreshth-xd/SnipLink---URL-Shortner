@@ -21,7 +21,7 @@ export async function POST(req){
         );
 
         if (!resultLimit.allowed) {
-            return Response.json(
+            return NextResponse.json(
                 {
                     error:"Too many login attempts. Please try again later."
                 },
